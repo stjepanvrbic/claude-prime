@@ -121,21 +121,25 @@ flow: step1 -> step2
 
 ## Installation
 
-1. Copy the `prime` directory to your plugins location
-2. Enable the plugin in Claude Code settings
-3. Restart Claude Code
+1. Add the marketplace:
+   ```
+   /plugin add-marketplace stjepanvrbic/claude-prime
+   ```
 
-Or install via plugin directory flag:
-```bash
-claude --plugin-dir /path/to/prime
-```
+2. Install the plugin:
+   ```
+   /plugin install prime
+   ```
+
+3. Restart Claude Code to activate hooks
 
 ## Files
 
 ```
 prime/
 ├── .claude-plugin/
-│   └── plugin.json           # Plugin manifest
+│   ├── plugin.json           # Plugin manifest
+│   └── marketplace.json      # Marketplace definition
 ├── commands/
 │   └── prime.md              # /prime command
 ├── agents/
