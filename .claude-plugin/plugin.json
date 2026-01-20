@@ -1,0 +1,8 @@
+{
+  "name": "prime",
+  "version": "1.0.0",
+  "description": "Context priming plugin - launches subagents to analyze codebase and provide targeted context for LLM consumption",
+  "author": {
+    "name": "stjep"
+  }
+}

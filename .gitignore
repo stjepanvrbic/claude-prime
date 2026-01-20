@@ -1,0 +1,9 @@
+# State files (session-specific)
+.claude/.prime-state-*
+
+# Local settings
+.claude/*.local.md
+
+# OS files
+.DS_Store
+Thumbs.db
