@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-prime",
+  "description": "Context priming plugin for Claude Code",
+  "owner": {
+    "name": "stjepanvrbic"
+  },
+  "plugins": [
+    {
+      "name": "prime",
+      "description": "Context priming plugin - launches subagents to analyze codebases and provide LLM-optimized context",
+      "version": "1.0.0",
+      "author": {
+        "name": "stjepanvrbic"
+      },
+      "source": ".",
+      "category": "productivity"
+    }
+  ]
+}
