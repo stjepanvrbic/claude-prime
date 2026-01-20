@@ -1,28 +1,45 @@
 #!/bin/bash
 # Session start hook for prime plugin
 # Creates a unique session state file marking this session as "unprimed"
+# Windows-compatible version
 
 set -euo pipefail
 
 # Read input from stdin
 input=$(cat)
 
-# Extract session_id from input
-session_id=$(echo "$input" | jq -r '.session_id // empty')
+# Extract session_id - try jq first, fallback to grep/sed
+if command -v jq &> /dev/null; then
+  session_id=$(echo "$input" | jq -r '.session_id // empty' 2>/dev/null || echo "")
+else
+  # Fallback: extract session_id using grep/sed
+  session_id=$(echo "$input" | grep -o '"session_id"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/' 2>/dev/null || echo "")
+fi
 
-# If no session_id, generate a UUID
+# If no session_id, generate one
 if [ -z "$session_id" ]; then
-  # Generate UUID - works on both Linux and macOS
+  # Try multiple methods for UUID generation
   if command -v uuidgen &> /dev/null; then
     session_id=$(uuidgen | tr '[:upper:]' '[:lower:]')
+  elif command -v powershell &> /dev/null; then
+    # Windows PowerShell
+    session_id=$(powershell -Command "[guid]::NewGuid().ToString()" 2>/dev/null || echo "")
+  elif [ -f /proc/sys/kernel/random/uuid ]; then
+    # Linux
+    session_id=$(cat /proc/sys/kernel/random/uuid)
   else
-    # Fallback: use /dev/urandom
-    session_id=$(cat /proc/sys/kernel/random/uuid 2>/dev/null || head -c 32 /dev/urandom | xxd -p | head -c 32)
+    # Last resort: timestamp + random
+    session_id="$(date +%s)-$RANDOM-$RANDOM"
   fi
 fi
 
 # Get project directory
-project_dir=$(echo "$input" | jq -r '.cwd // empty')
+if command -v jq &> /dev/null; then
+  project_dir=$(echo "$input" | jq -r '.cwd // empty' 2>/dev/null || echo "")
+else
+  project_dir=$(echo "$input" | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/\1/' 2>/dev/null || echo "")
+fi
+
 if [ -z "$project_dir" ]; then
   project_dir="$PWD"
 fi
@@ -33,12 +50,15 @@ mkdir -p "$project_dir/.claude"
 # Create state file with session info
 state_file="$project_dir/.claude/.prime-state-$session_id"
 
-# Write initial state
+# Get current timestamp
+timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date +%Y-%m-%dT%H:%M:%SZ)
+
+# Write initial state (manual JSON to avoid jq dependency)
 cat > "$state_file" << EOF
 {
   "status": "unprimed",
   "session_id": "$session_id",
-  "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  "created_at": "$timestamp"
 }
 EOF
 
