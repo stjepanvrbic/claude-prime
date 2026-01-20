@@ -13,7 +13,7 @@
       "author": {
         "name": "stjepanvrbic"
       },
-      "source": ".",
+      "source": "./plugin",
       "category": "productivity"
     }
   ]
