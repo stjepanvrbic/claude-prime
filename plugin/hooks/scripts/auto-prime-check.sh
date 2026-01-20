@@ -47,6 +47,12 @@ else
   state_file="$project_dir/.claude/.prime-state-$session_id"
 fi
 
+# Check for simple marker file first (created by local /prime command)
+if [ -f "$project_dir/.claude/.prime-session-marker" ]; then
+  echo '{"continue": true}'
+  exit 0
+fi
+
 # Check if state file exists
 if [ -z "$state_file" ] || [ ! -f "$state_file" ]; then
   # No state file - assume unprimed but don't block
