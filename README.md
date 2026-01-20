@@ -133,6 +133,17 @@ flow: step1 -> step2
 
 3. Restart Claude Code to activate hooks
 
+## Platform Compatibility
+
+Works on **Windows**, **macOS**, and **Linux**.
+
+- **Windows**: Requires Git Bash (included with Git for Windows)
+- **macOS/Linux**: Works out of the box
+
+The hook scripts automatically detect your platform and use appropriate tools:
+- UUID generation: `uuidgen` (Unix) or PowerShell (Windows)
+- JSON parsing: `jq` if available, otherwise `grep`/`sed` fallback
+
 ## Files
 
 ```
